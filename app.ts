@@ -4,8 +4,11 @@ import createError from 'http-errors';
 import express from 'express';
 import cors from 'cors';
 import logger from 'morgan';
+import cookieParser from 'cookie-parser';
+
 // files :
 import dataSource, { initDB } from './database/dataSource.js';
+import usersRouter from './routes/user.routes.js';
 
 let app = express();
 const PORT = 5000;
@@ -15,10 +18,12 @@ app.use(cors({
   credentials: true
 }));
 
+app.use(cookieParser());
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
+app.use('/users', usersRouter);
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   next(createError(404));
@@ -33,6 +38,7 @@ app.use((err: any, req: any, res: any, next: any) => {
   // render the error page
   res.status(err.status || 500).send(err);
 });
+
 
 
 app.listen(PORT, () => {

@@ -16,7 +16,7 @@ export class User extends BaseEntity {
     @Column({ length: 50, nullable: false })
     lastName: string;
 
-    @Column({ nullable: false })
+    @Column({ nullable: false,unique: true })
     email: string;
 
     @BeforeInsert()
@@ -39,13 +39,13 @@ export class User extends BaseEntity {
     @JoinTable()
     roles: Role[];
 
-    @OneToMany(() => Article, article => article.user)
+    @OneToMany(() => Article, article => article.user,{ cascade: true, eager: true })
     articles: Article[];
 
-    @OneToMany(() => Image, image => image.user)
+    @OneToMany(() => Image, image => image.user,{ eager: true })
     images: Image[];
 
-    @OneToMany(() => Video, video => video.user)
+    @OneToMany(() => Video, video => video.user,{ eager: true })
     videos: Video[];
 
     @CreateDateColumn({

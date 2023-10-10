@@ -24,7 +24,7 @@ export class Image extends BaseEntity {
     @JoinColumn()
     category: Relation<Category>;
 
-    @ManyToMany(() => Tag, { cascade: true, eager: true })
+    @ManyToMany(() => Tag, { cascade: true})
     @JoinTable()
     tags: Tag[];
 
