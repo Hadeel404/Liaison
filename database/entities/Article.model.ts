@@ -5,10 +5,13 @@ import { Tag } from "./Tag.model.js";
 import { Category } from "./Category.model.js";
 import { Video } from "./Video.model.js";
 
-@Entity('Article')
+@Entity('articles')
 export class Article extends BaseEntity {
     @PrimaryGeneratedColumn('increment')
     articleId: number;
+
+    @Column({ nullable: false })
+    title: string;
 
     @Column({ nullable: false })
     content: string;
@@ -28,7 +31,6 @@ export class Article extends BaseEntity {
     @OneToMany(() => Image, image => image.article,{nullable:true, eager: true})
     images: Image[];
 
-    
     @OneToMany(() => Video, (video) => video.article, {eager: true, cascade: true})
     videos: Video[];
     

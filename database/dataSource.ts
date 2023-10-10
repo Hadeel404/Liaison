@@ -1,12 +1,12 @@
 import { DataSource } from "typeorm";
 import { Article } from "./entities/Article.model.js";
-import { Video } from "./entities/Video.model.js";
+ import { Video } from "./entities/Video.model.js";
 import { Category } from "./entities/Category.model.js";
 import { Tag } from "./entities/Tag.model.js";
 import { User } from "./entities/User.model.js";
 import { Role } from "./entities/Role.model.js";
 import { Permission } from "./entities/Permission.model.js";
-import { Image } from "./entities/Image.model.js";
+ import { Image } from "./entities/Image.model.js";
 
 const dataSource = new DataSource({
   type: 'mysql',
@@ -22,7 +22,6 @@ const dataSource = new DataSource({
    Video,
    Article,
    Image,
-   
    Category,
    Tag
   ],

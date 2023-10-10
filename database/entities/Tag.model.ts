@@ -1,9 +1,9 @@
 import { BaseEntity, OneToMany, Column, CreateDateColumn, Entity,ManyToMany, JoinTable, JoinColumn, PrimaryGeneratedColumn } from "typeorm";
 import { Article } from "./Article.model.js";
-import { Image } from "./Image.model.js";
-import { Video } from "./Video.model.js";
+ import { Image } from "./Image.model.js";
+ import { Video } from "./Video.model.js";
 
-@Entity('Tag')
+@Entity('tags')
 export class Tag extends BaseEntity {
     @PrimaryGeneratedColumn('increment')
     tagId: number;
