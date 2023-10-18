@@ -29,7 +29,7 @@ const login = async (email: string, password: string) => {
         }
       );
 
-      return { token, firstName: user.firstName, lastName: user.lastName};
+      return { token, email: user.email, firstName: user.firstName, lastName: user.lastName };
     } else {
       throw ("Invalid Username or password!");
     }
