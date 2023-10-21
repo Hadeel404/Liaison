@@ -4,12 +4,14 @@ import createError from 'http-errors';
 import express from 'express';
 import cors from 'cors';
 import logger from 'morgan';
-import multer from 'multer';
-import fs from 'fs';
-import path from 'path';
+import cookieParser from 'cookie-parser';
 
 // files :
 import dataSource, { initDB } from './database/dataSource.js';
+import usersRouter from './routes/user.routes.js';
+import multer from 'multer';
+import fs from 'fs';
+import path from 'path';
 import contentRouter from './routes/content.routes.js';
 
 let app = express();
@@ -20,9 +22,12 @@ app.use(cors({
   credentials: true
 }));
 
+app.use(cookieParser());
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use('/users', usersRouter);
 app.use('/content', contentRouter);
 
 // catch 404 and forward to error handler
@@ -79,6 +84,7 @@ app.get('/file', (req, res) => {
 });
 
 //////////
+
 
 
 app.listen(PORT, () => {

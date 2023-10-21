@@ -16,22 +16,22 @@ export class Article extends BaseEntity {
     @Column({ nullable: false })
     content: string;
 
-    @ManyToOne(() => User , user => user.articles, { cascade: true, eager: true })
+    @ManyToOne(() => User , user => user.articles)
     @JoinColumn()
     user: User;
 
-    @ManyToOne(() => Category, category => category.articles, { cascade: true, eager: true })
+    @ManyToOne(() => Category, category => category.articles)
     @JoinColumn()
     category: Category;
 
-    @ManyToMany(() => Tag, { cascade: true, eager: true, nullable: true })
+    @ManyToMany(() => Tag, { cascade: true, nullable: true })
     @JoinTable()
     tags: Tag[];
 
-    @OneToMany(() => Image, image => image.article,{nullable:true, eager: true})
+    @OneToMany(() => Image, image => image.article,{nullable:true, })
     images: Image[];
 
-    @OneToMany(() => Video, (video) => video.article, {eager: true, cascade: true})
+    @OneToMany(() => Video, (video) => video.article, { cascade: true})
     videos: Video[];
     
     @CreateDateColumn({
