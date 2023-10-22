@@ -8,9 +8,11 @@ import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import cookieParser from 'cookie-parser';
 
 // files :
 import dataSource, { initDB } from './database/dataSource.js';
+import usersRouter from './routes/user.routes.js';
 import contentRouter from './routes/content.routes.js';
 import indexRouter from './routes/index.router.js';
 import { Image } from './database/entities/Image.model.js';
@@ -24,9 +26,12 @@ app.use(cors({
   credentials: true
 }));
 
+app.use(cookieParser());
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use('/users', usersRouter);
 app.use('/content', contentRouter);
 app.use('/', indexRouter);
 
@@ -90,6 +95,7 @@ app.get('/file', (req, res) => {
 app.use((req, res, next) => {
   next(createError(404));
 });
+
 
 app.listen(PORT, () => {
   logger(`App is listening on port ${PORT}`);
