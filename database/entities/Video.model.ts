@@ -11,6 +11,12 @@ export class Video extends BaseEntity {
 
     @Column({ nullable: false })
     videoPath: string;
+
+    @Column('simple-array', { nullable: true })
+    likes: string[] = [];
+
+    @Column('simple-array', { nullable: true })
+    shares: string[] = [];
    
     @ManyToOne(() => Article, (article) => article.videos)
     @JoinColumn()

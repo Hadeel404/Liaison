@@ -25,7 +25,8 @@ const dataSource = new DataSource({
    Category,
    Tag
   ],
-  //migrations: ['./**/migration/*.ts'],
+  migrations: ['./**/migration/*.ts'],
+  //migrations: [],
   synchronize: true,
   logging: false
 });

@@ -11,15 +11,15 @@ export class Tag extends BaseEntity {
     @Column({ nullable: false })
     tagName: string;
 
-    @ManyToMany(() => Article, { cascade: true, eager: true })
+    @ManyToMany(() => Article, { cascade: true })
     @JoinTable()
     articles: Article[];
 
-    @ManyToMany(() => Image, { cascade: true, eager: true })
+    @ManyToMany(() => Image, { cascade: true })
     @JoinTable()
     images: Image[];
 
-    @ManyToMany(() => Video, { cascade: true, eager: true })
+    @ManyToMany(() => Video, { cascade: true})
     @JoinTable()
     videos: Video[];
 

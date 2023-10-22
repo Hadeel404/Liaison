@@ -7,10 +7,14 @@ import logger from 'morgan';
 import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 // files :
 import dataSource, { initDB } from './database/dataSource.js';
 import contentRouter from './routes/content.routes.js';
+import indexRouter from './routes/index.router.js';
+import { Image } from './database/entities/Image.model.js';
+
 
 let app = express();
 const PORT = 5000;
@@ -24,11 +28,8 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use('/content', contentRouter);
+app.use('/', indexRouter);
 
-// catch 404 and forward to error handler
-app.use((req, res, next) => {
-  next(createError(404));
-});
 
 // error handler
 app.use((err: any, req: any, res: any, next: any) => {
@@ -41,7 +42,10 @@ app.use((err: any, req: any, res: any, next: any) => {
 });
 
 ///////////
-// create/upload image
+// // create/upload image
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
     callback(null, 'uploads/');
@@ -60,6 +64,8 @@ app.post('/upload', upload.single('file'), (req, res) => {
     return;
   }
   const fileURL = req.file.destination + req.file.filename;
+  const newUploadedImage = Image.create({imagePath: fileURL});
+  newUploadedImage.save();
   res.send({
     message: 'File Uploaded Successfully!',
     file: fileURL
@@ -80,6 +86,10 @@ app.get('/file', (req, res) => {
 
 //////////
 
+// catch 404 and forward to error handler
+app.use((req, res, next) => {
+  next(createError(404));
+});
 
 app.listen(PORT, () => {
   logger(`App is listening on port ${PORT}`);
