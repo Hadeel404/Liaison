@@ -16,7 +16,7 @@ export class Article extends BaseEntity {
     @Column({ nullable: false })
     content: string;
 
-    @ManyToOne(() => User , user => user.articles, { cascade: true })
+    @ManyToOne(() => User , user => user.articles)
     @JoinColumn()
     user: User;
 
