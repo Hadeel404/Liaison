@@ -15,7 +15,7 @@ const authenticate = async (
 
   if (tokenIsValid) {
     const decoded = jwt.decode(token, { json: true });
-    const user = await User.findOneBy({ email: decoded?.email || '' })
+    const user = await User.findOneBy({ userId: decoded?.userId || '' })
     res.locals.user = user;
     next();
   } else {
