@@ -19,6 +19,55 @@ const insertTag = (payload: ArticleNs.Tag) => {
   const newTag = Tag.create(payload);
   return newTag.save();
 }
+const LikeSpecificArticle = async (usrId: number, articId: number) => {
+  try{
+    const article = await Article.findOneBy({ articleId:articId });
+    if(!article){
+      throw "no article";
+    }
+    if (article.likes === null) {
+      article.likes = [];
+    }
+    //artical.likes = [""+usrId];
+    const userExists = article.likes.some(userId => userId === userId);
+    if (userExists) {
+      console.log('User ID exists in the array.');
+    //}
+
+    //if (article.likes.includes(usrId)){
+    //  console.log("included")
+      article.likes == article.likes.filter(userId => userId !== usrId); //(usrId);
+    }else{
+      article.likes.push(usrId); 
+    }
+    await article.save();
+  }catch(error){
+    console.log(error);
+    throw 'could not add a like to article !';
+  }
+};
+const shareSpecificArticle = async (usrId: number, articId: number) => {
+  try{
+    const article = await Article.findOneBy({ articleId:articId });
+    if(!article){
+      throw "no article";
+    }
+    if (article.shares === null) {
+      article.shares = [];
+    }
+    const userExists = article.shares.some(userId => userId === userId);
+    if (userExists) {
+      console.log('User ID exists in the array.');
+      article.shares == article.shares.filter(userId => userId !== usrId); 
+    }else{
+      article.shares.push(usrId); 
+    }
+    await article.save();
+  }catch(error){
+    console.log(error);
+    throw 'could not add a like to article !';
+  }
+};
 // read:
 const getArticlesByTitle = async (payload: ArticleNs.articaleReq) => {
   const page = parseInt(payload.page);
@@ -65,7 +114,7 @@ const getCategoryById = async (payload:number) => {
     return category; 
   }catch(error){
     console.log(error);
-    throw 'tag not found';
+    throw 'category not found';
   }
 }
 
@@ -125,4 +174,5 @@ const deleteTag = async (id: number) => {
 
 export { insertArticle,getArticlesByTitle,updateArticle ,deleteArticle,
   insertCategory, deleteCategory,getCategoryById,
-  insertTag, deleteTag, getTagById}
+  insertTag, deleteTag, getTagById,
+  LikeSpecificArticle, shareSpecificArticle}

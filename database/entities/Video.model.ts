@@ -13,10 +13,10 @@ export class Video extends BaseEntity {
     videoPath: string;
 
     @Column('simple-array', { nullable: true })
-    likes: string[] = [];
+    likes: number[] = [];
 
     @Column('simple-array', { nullable: true })
-    shares: string[] = [];
+    shares: number[] = [];
    
     @ManyToOne(() => Article, (article) => article.videos)
     @JoinColumn()

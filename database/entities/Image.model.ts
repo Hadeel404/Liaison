@@ -13,10 +13,10 @@ export class Image extends BaseEntity {
     imagePath: string;
 
     @Column('simple-array', { nullable: true })
-    likes: string[] = [];
+    likes: number[] = [];
 
     @Column('simple-array', { nullable: true })
-    shares: string[] = [];
+    shares: number[] = [];
 
     @ManyToOne(() => Article , article => article.images, { cascade: true, nullable: true })
     @JoinColumn()
