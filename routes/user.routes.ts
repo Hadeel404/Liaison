@@ -81,7 +81,7 @@ router.post("/login", (req, res, next) => {
         maxAge: 24 * 60 * 60 * 1000,
       });
 
-      res.send();
+      res.send({token: data.token});
     })
     .catch((err) => {
       next({
