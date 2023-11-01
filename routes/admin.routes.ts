@@ -31,8 +31,8 @@ router.get('/:id/share', async (req: express.Request, res) => {
 // retrive/get count of likes of specific article (by id) :
 router.get('/:id/likes', async (req: express.Request, res) => {
   try {
-    const article = await getArticleLikesCount(Number(req.params.id));
-    res.status(200).json({article});
+    const article: any = await getArticleLikesCount(Number(req.params.id));
+    res.status(200).json(article?.[0]?.likes);
   }catch(error){
     console.error(error);
     res.status(500).send("Something went wrong!");

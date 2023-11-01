@@ -15,8 +15,8 @@ const router = express.Router();
 
 //Create :
 // create article
-router.post('/article',authorize('Post_articles'),authenticate,validateArticle,(req, res, next) => {
-    insertArticle(req.body)
+router.post('/article', authenticate,authorize('Post_articles'),validateArticle,(req, res, next) => {
+    insertArticle({...req.body, user: res.locals?.user})
     .then(() => {
       res.status(201).send("artical has been created");
     })
@@ -27,7 +27,7 @@ router.post('/article',authorize('Post_articles'),authenticate,validateArticle,(
 });
 
 // create category
-router.post('/category',authorize('Post_categories'),authenticate,validateCategory,(req, res, next) => {
+router.post('/category',authenticate,authorize('Post_catigories'),validateCategory,(req, res, next) => {
   insertCategory(req.body)
   .then(() => {
     res.status(201).send("category has been created");
@@ -39,7 +39,7 @@ router.post('/category',authorize('Post_categories'),authenticate,validateCatego
 });
 
 // create tag
-router.post('/tag',authorize('Post_tags'),authenticate,validateTag,(req, res, next) => {
+router.post('/tag',authenticate,authorize('Post_tags'),validateTag,(req, res, next) => {
   insertTag(req.body)
   .then(() => {
     res.status(201).send("Tag has been created");
@@ -51,7 +51,7 @@ router.post('/tag',authorize('Post_tags'),authenticate,validateTag,(req, res, ne
 });
 
 // create a like to a Specific post:
-router.post("/:id/like",authorize('Post_like'),authenticate, async (req, res: express.Response) => { //authorize('Post_like'),
+router.post("/:id/like",authenticate, async (req, res: express.Response) => { //authorize('Post_like'),
   try {
     const profile = res.locals?.user;
     if(!profile){
@@ -68,7 +68,7 @@ router.post("/:id/like",authorize('Post_like'),authenticate, async (req, res: ex
 }
 })
 // create a share to a Specific post:
-router.post("/:id/share",authorize('Post_share'),authenticate, async (req, res: express.Response) => { //authorize('Post_like'),
+router.post("/:id/share",authenticate, async (req, res: express.Response) => { //authorize('Post_like'),
   try {
     const profile = res.locals?.user;
     if(!profile){
@@ -92,8 +92,12 @@ router.post("/:id/share",authorize('Post_share'),authenticate, async (req, res: 
 
 //Update :
 // update articale
-router.put("/article/:id",authorize('Put_articles'),authenticate, async (req, res: express.Response) => {
+router.put("/article/:id",authenticate, async (req, res: express.Response) => {
   try {
+    const profile = res.locals?.user;
+    if(profile.articles.filter((article:any) => article.articleId === +req.params.id).length === 0) {
+      return res.status(401).send("You don't have permissions to update this article")
+    }
     await updateArticle(req.body, Number(req.params.id));
     res.status(200).json({ message: "article has been updated successfully" });
   } catch (error) {
@@ -104,8 +108,12 @@ router.put("/article/:id",authorize('Put_articles'),authenticate, async (req, re
 
 //Delete :
 // delete articale
-router.delete("/article/:id",authorize('Delete_articles'),authenticate,async (req, res: express.Response) => {
+router.delete("/article/:id",authenticate,async (req, res: express.Response) => {
   try {
+    const profile = res.locals?.user;
+    if(profile.articles.filter((article:any) => article.articleId === +req.params.id).length === 0) {
+      return res.status(401).send("You don't have permissions to update this article")
+    }
     await deleteArticle(Number(req.params.id));
     res.status(200).json("article has been deleted successfully");
   } catch (error) {
@@ -114,7 +122,7 @@ router.delete("/article/:id",authorize('Delete_articles'),authenticate,async (re
   }
 });
 // delete category
-router.delete("/category/:id",authorize('Delete_categories'),authenticate,async (req, res: express.Response) => {
+router.delete("/category/:id",authenticate,authorize('Delete_catigories'),async (req, res: express.Response) => {
   try {
     await deleteCategory(Number(req.params.id));
     res.status(200).json("category has been deleted successfully");
@@ -124,7 +132,7 @@ router.delete("/category/:id",authorize('Delete_categories'),authenticate,async 
   }
 });
 // delete tag
-router.delete("/tag/:id",authorize('Delete_tags'),authenticate, async (req, res: express.Response) => {
+router.delete("/tag/:id",authenticate,authorize('Delete_tags'), async (req, res: express.Response) => {
   try {
     await deleteTag(Number(req.params.id));
     res.status(200).json("tag has been deleted successfully");
@@ -139,7 +147,7 @@ router.delete("/tag/:id",authorize('Delete_tags'),authenticate, async (req, res:
 
 //Retrive :
 // retrive/get all articles
-router.get('/articles',authorize('Get_articles'), authenticate,async (req: ArticleNs.articaleRequest, res) => {
+router.get('/articles', authenticate, authorize('Get_articles'),async (req: ArticleNs.articaleRequest, res) => {
   try {
     const page = parseInt(req.query.page || '1');
     const pageSize = parseInt(req.query.pageSize || '10');
@@ -166,7 +174,7 @@ router.get('/articles',authorize('Get_articles'), authenticate,async (req: Artic
   }
 });
 // retrive/get all categories
-router.get('/categories',authorize('Get_categories'), authenticate,async (req: ArticleNs.articaleRequest, res) => {
+router.get('/categories', authenticate,authorize('Get_categories'),async (req: ArticleNs.articaleRequest, res) => {
   try {
     const page = parseInt(req.query.page || '1');
     const pageSize = parseInt(req.query.pageSize || '10');
@@ -192,7 +200,7 @@ router.get('/categories',authorize('Get_categories'), authenticate,async (req: A
   }
 });
   // retrive/get all tags
-  router.get('/tags',authorize('Get_tags'),authenticate, async (req, res) => {
+  router.get('/tags',authenticate,authorize('Get_tags'), async (req, res) => {
     try {
       const [tags, total] = await Tag.findAndCount({
         //relations:{images:true, videos:true},
@@ -214,7 +222,7 @@ router.get('/categories',authorize('Get_categories'), authenticate,async (req: A
 // retrive/get all videos
 
 // retrive/get specific articales (by title)
-router.get('/articles/:title',authorize('Get_article'),authenticate,async (req: ArticleNs.articaleRequest, res) => {
+router.get('/articles/:title',authenticate,async (req: ArticleNs.articaleRequest, res) => {
   try {
     const payload={
       page: req.query.page?.toString() || '1',
@@ -236,7 +244,7 @@ router.get('/articles/:title',authorize('Get_article'),authenticate,async (req: 
 })
 
 // retrive/get specific tag (by id) with all of the articles related to it
-router.get('/tag/:id',authorize('Get_tag'), authenticate,async (req: express.Request, res) => {
+router.get('/tag/:id', authenticate,authorize('Get_tags'),async (req: express.Request, res) => {
   try {
     //const id = Number(req.params);
     const tag = await getTagById(Number(req.params.id));
@@ -248,7 +256,7 @@ router.get('/tag/:id',authorize('Get_tag'), authenticate,async (req: express.Req
 })
 
 // retrive/get specific category (by id) with all of the articles related to it
-router.get('/category/:id',authorize('Get_category'),authenticate, async (req: express.Request, res) => {
+router.get('/category/:id',authenticate,authorize('Get_categories'), async (req: express.Request, res) => {
   try {
     const category = await getCategoryById(Number(req.params.id));
     res.status(200).json({category});
