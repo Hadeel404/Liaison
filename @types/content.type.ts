@@ -6,6 +6,8 @@ export namespace ArticleNs{
     id: number;
     title:string;
     content: string;
+    category?:string;
+    tags?:string[];
     //user: number;
     createdAt: Date;
   }
