@@ -108,6 +108,24 @@ const getArticlesByCat = async (payload: ArticleNs.articaleReq) => {
   return articles; 
 }
 
+const getArticlesByTag = async (payload: ArticleNs.articaleReq) => {
+  const page = parseInt(payload.page);
+  const pageSize = parseInt(payload.pageSize);
+  const tag = payload.tag||"";
+  const articles = await Article.find({
+    skip: pageSize * (page - 1),
+    take: pageSize,
+    order: {
+      createdAt: 'DESC'
+    },
+    relations: {tags: true},
+    where: [
+      { tags: {tagName: ILike(tag)} }
+    ],
+  });
+
+  return articles; 
+}
 const getTagById = async (payload:number) => {
   try{  
     const tag = await Tag.find({
@@ -191,7 +209,7 @@ const deleteTag = async (id: number) => {
   await tag.remove();
 }
 
-export { insertArticle,getArticlesByTitle,getArticlesByCat,updateArticle ,deleteArticle,
+export { insertArticle,getArticlesByTitle,getArticlesByCat,getArticlesByTag,updateArticle ,deleteArticle,
   insertCategory, deleteCategory,getCategoryById,
   insertTag, deleteTag, getTagById,
   LikeSpecificArticle, shareSpecificArticle}

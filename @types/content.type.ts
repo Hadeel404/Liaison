@@ -31,6 +31,8 @@ export namespace ArticleNs{
     page: string;
     pageSize: string;
     titleSubstring?: string;  
+    category?: string;  
+    tag?: string;  
 }
 
   export interface articaleResponse extends express.Response {
