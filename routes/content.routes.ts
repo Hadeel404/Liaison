@@ -10,13 +10,35 @@ import { Category } from '../database/entities/Category.model.js';
 import { Tag } from '../database/entities/Tag.model.js';
 import { authenticate } from '../middlewares/Auth/Authenticate.js';
 import { authorize } from '../middlewares/Auth/Authorize.js';
+import multer from 'multer';
+import { Image } from '../database/entities/Image.model.js';
+import { uploadFile }  from '../services/aws.s3.js';
 
 const router = express.Router();
 
+const storage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, 'uploads/');
+  },
+  filename: (req, file, callback) => {
+    callback(null, Date.now() + `-${Math.floor(Math.random() * 100)}-` + file.originalname)
+  }
+});
+
+const upload = multer({ storage });
+
 //Create :
 // create article
-router.post('/article', authenticate,authorize('Post_articles'),validateArticle,(req, res, next) => {
-    insertArticle({...req.body, user: res.locals?.user})
+router.post('/article', authenticate,authorize('Post_articles'),upload.single('image'),validateArticle,async (req, res, next) => {
+  const images = [];
+  if (req.file) {
+    await uploadFile(req.file);
+    const fileURL = req.file.destination + req.file.filename;
+    const newUploadedImage = Image.create({ imagePath: fileURL });
+    await newUploadedImage.save();
+    images.push(newUploadedImage);
+  }
+  insertArticle({...req.body, user: res.locals?.user, images})
     .then(() => {
       res.status(201).send("artical has been created");
     })

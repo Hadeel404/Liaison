@@ -8,6 +8,7 @@ export namespace ArticleNs{
     content: string;
     category?:string;
     tags?:string[];
+    images?:any[];
     //user: number;
     createdAt: Date;
   }
