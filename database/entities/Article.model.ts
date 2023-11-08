@@ -20,7 +20,7 @@ export class Article extends BaseEntity {
     @JoinColumn()
     user: User;
 
-    @ManyToOne(() => Category, category => category.articles, { cascade: true })
+    @ManyToOne(() => Category, category => category.articles, {eager: true, cascade: true })
     @JoinColumn()
     category: Category;
 
@@ -30,7 +30,7 @@ export class Article extends BaseEntity {
     @Column('simple-array', { nullable: true })
     shares: number[] = [];
 
-    @ManyToMany(() => Tag, { cascade: true, nullable: true })
+    @ManyToMany(() => Tag, { cascade: true, nullable: true, eager: true })
     @JoinTable()
     tags: Tag[];
 

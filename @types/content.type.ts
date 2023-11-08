@@ -6,6 +6,8 @@ export namespace ArticleNs{
     id: number;
     title:string;
     content: string;
+    category?:string;
+    tags?:string[];
     //user: number;
     createdAt: Date;
   }
@@ -29,6 +31,8 @@ export namespace ArticleNs{
     page: string;
     pageSize: string;
     titleSubstring?: string;  
+    category?: string;  
+    tag?: string;  
 }
 
   export interface articaleResponse extends express.Response {

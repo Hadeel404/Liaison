@@ -1,5 +1,5 @@
 import express from 'express';
-import { insertArticle,getArticlesByTitle,updateArticle,deleteArticle,
+import { insertArticle,getArticlesByTitle, getArticlesByCat,getArticlesByTag,updateArticle,deleteArticle,
   insertCategory,deleteCategory, getCategoryById,
   insertTag,deleteTag,getTagById,
   LikeSpecificArticle, shareSpecificArticle} from '../controllers/content.controller.js';
@@ -173,6 +173,51 @@ router.get('/articles', authenticate, authorize('Get_articles'),async (req: Arti
     res.status(500).send("Something went wrong!");
   }
 });
+
+// retrive/get articles by category
+router.get('/articles/category/:category', authenticate, authorize('Get_articles'),async (req: ArticleNs.articaleRequest, res) => {
+  try {
+    const category = req.params.category
+    const payload={
+      page: req.query.page?.toString() || '1',
+      pageSize: req.query.pageSize?.toString() || '10',
+      category
+    };
+    const articles = await getArticlesByCat(payload);
+    res.status(200).json({
+      page: payload.page,
+      pageSize: payload.pageSize,
+      total: articles.length,
+      articles
+    });
+  }catch(error){
+    console.error(error);
+    res.status(500).send("Something went wrong!");
+  }
+});
+
+// retrive/get articles by tag
+router.get('/articles/tag/:tag', authenticate, authorize('Get_articles'),async (req: ArticleNs.articaleRequest, res) => {
+  try {
+    const tag = req.params.tag
+    const payload={
+      page: req.query.page?.toString() || '1',
+      pageSize: req.query.pageSize?.toString() || '10',
+      tag
+    };
+    const articles = await getArticlesByTag(payload);
+    res.status(200).json({
+      page: payload.page,
+      pageSize: payload.pageSize,
+      total: articles.length,
+      articles
+    });
+  }catch(error){
+    console.error(error);
+    res.status(500).send("Something went wrong!");
+  }
+});
+
 // retrive/get all categories
 router.get('/categories', authenticate,authorize('Get_categories'),async (req: ArticleNs.articaleRequest, res) => {
   try {
