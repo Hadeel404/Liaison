@@ -1,14 +1,14 @@
-import express from 'express';
 import { Article } from "../database/entities/Article.model.js";
 import {ArticleNs} from "../@types/content.type.js";
-import dataSource from '../database/dataSource.js';
-import { Like } from 'typeorm';
+import { ILike, Like } from 'typeorm';
 import { Category } from '../database/entities/Category.model.js';
 import { Tag } from '../database/entities/Tag.model.js';
 
 // create:
-const insertArticle = (payload: ArticleNs.Article) => {
-  const newArticle = Article.create(payload);
+const insertArticle = async ({category, tags=[], ...payload}: ArticleNs.Article) => {
+  const categoryObj = await Category.findOneBy({categoryName: category})|| undefined
+  const tagsObj = tags?.map && tags?.map(tag=>Tag.create({tagName: tag})) || undefined
+  const newArticle = Article.create({...payload, category: categoryObj, tags: tagsObj });
   return newArticle.save();
 }
 const insertCategory = (payload: ArticleNs.Category) => {
@@ -85,6 +85,43 @@ const getArticlesByTitle = async (payload: ArticleNs.articaleReq) => {
       { title: Like(`%${titleSubstring}%`) }
     ],
     //relations: ['user', '']
+  });
+
+  return articles; 
+}
+
+const getArticlesByCat = async (payload: ArticleNs.articaleReq) => {
+  const page = parseInt(payload.page);
+  const pageSize = parseInt(payload.pageSize);
+  const category = payload.category||"";
+  const articles = await Article.find({
+    skip: pageSize * (page - 1),
+    take: pageSize,
+    order: {
+      createdAt: 'DESC'
+    },
+    where: [
+      { category: {categoryName: ILike(category)} }
+    ],
+  });
+
+  return articles; 
+}
+
+const getArticlesByTag = async (payload: ArticleNs.articaleReq) => {
+  const page = parseInt(payload.page);
+  const pageSize = parseInt(payload.pageSize);
+  const tag = payload.tag||"";
+  const articles = await Article.find({
+    skip: pageSize * (page - 1),
+    take: pageSize,
+    order: {
+      createdAt: 'DESC'
+    },
+    relations: {tags: true},
+    where: [
+      { tags: {tagName: ILike(tag)} }
+    ],
   });
 
   return articles; 
@@ -172,7 +209,7 @@ const deleteTag = async (id: number) => {
   await tag.remove();
 }
 
-export { insertArticle,getArticlesByTitle,updateArticle ,deleteArticle,
+export { insertArticle,getArticlesByTitle,getArticlesByCat,getArticlesByTag,updateArticle ,deleteArticle,
   insertCategory, deleteCategory,getCategoryById,
   insertTag, deleteTag, getTagById,
   LikeSpecificArticle, shareSpecificArticle}

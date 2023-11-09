@@ -8,7 +8,9 @@ import {
     updateUser
 } from "../dist/controllers/user.controller.js";
 import jwt from 'jsonwebtoken';
-import { User }  from '../dist/database/entities/User.model.js';
+import {
+    User
+} from '../dist/database/entities/User.model.js';
 
 beforeAll(async () => {
     await initDB();
@@ -17,21 +19,40 @@ beforeAll(async () => {
 afterAll(async () => {
     await dataSource.destroy();
 });
-
+const tmpEmail = `test${parseInt(Math.random()*10000)}@gmail.com`;
 const tmpData = {
-    "email": "asee@gmail.com",
+    "email": tmpEmail,
     "password": "123@2022"
 };
 
-describe("Login process", () => {
+describe("register process", () => {
     let data;
+
+    beforeAll(async () => {
+        try {
+            data = await register({
+                "firstName": "test",
+                "lastName": "test",
+                "email": tmpEmail,
+                "password": "123@2022"
+            });
+        } catch (e) {}
+    })
+
+    it("user created", async () => {
+        expect(data).toBeTruthy();
+    });
+
+});
+
+describe("Login process", () => {
+    let data = {};
 
     beforeAll(async () => {
         try {
             data = await login(tmpData.email, tmpData.password);
 
-        } catch (e) {
-        }
+        } catch (e) {}
     })
 
     it("returns a token", async () => {
@@ -47,46 +68,27 @@ describe("Login process", () => {
         const payload = jwt.decode(data.token, {
             json: true
         });
-        expect(payload?.email).toEqual(tmpData.email);
+        expect(payload ?.email).toEqual(tmpData.email);
     });
 });
 
-describe("register process", () => {
-    let data;
 
-    beforeAll(async () => {
-        try {
-            data = await register({
-                "firstName": "test",
-                "lastName": "test",
-                "email": `test${parseInt(Math.random()*1000)}@gmail.com`,
-                "password": "123@2022"
-            });
-        } catch (e) {
-        }
-    })
-
-    it("user created", async () => {
-        expect(data).toBeTruthy();
-    });
-
-});
 describe("update user", () => {
     let data;
 
     beforeAll(async () => {
         try {
             const dataUser = await login(tmpData.email, tmpData.password);
-            const user = await User.findOneBy({ email: dataUser?.email || '' })
+            const user = await User.findOneBy({
+                email: dataUser ?.email || ''
+            })
 
             data = await updateUser(
-                user,
-                {
-                "firstName": "updated",
-                "lastName": `user${parseInt(Math.random()*1000)}`,
-            });
-        } catch (e) {
-        }
+                user, {
+                    "firstName": "updated",
+                    "lastName": `user${parseInt(Math.random()*1000)}`,
+                });
+        } catch (e) {}
     })
 
     it("user updated", async () => {
